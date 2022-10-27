@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<button id='tr1-button'>JSON Request</button>
+
+<script>
+  const httpGet = (theUrl) => {
+    return new Promise(resolve => {
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.open( "GET", theUrl, true ); // false for synchronous request
+      xmlHttp.send( null );
+      let result = xmlHttp.responseText;
+      resolve(result);
+    });
+  }
+
+  function httpGetAsync(theUrl, callback)
+  {
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.onreadystatechange = function() {
+          if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+              callback(xmlHttp.responseText);
+      }
+      xmlHttp.open("GET", theUrl, true); // true for asynchronous
+      xmlHttp.send(null);
+  }
+
+  //button click to trigger async task
+  document.getElementById('tr1-button').addEventListener('click', () => {
+          httpGetAsync('https://io.adafruit.com/api/v2/evanhauk/groups/default/feeds/digital/data/', cb => {
+
+            //get JSON text into JSON object
+            cbJson = JSON.parse(cb);
+
+            //print length of JSON objects
+            document.getElementById('numberOfPoints').innerHTML = Object.keys(cbJson).length;
+
+            //print single item, needs to be stringified
+            document.getElementById('latestData').innerHTML = JSON.stringify(cbJson[0]);
+
+            //print entire JSON object (can also just set equal to cb before converted to JSON object it is string)
+            document.getElementById('data').innerHTML = JSON.stringify(cbJson);
+          });
+  });
+
+</script>
+
+
+  <body>
+    <p>This is HTTP GET Request:</p>
+    <p>Number of Data Points:</p>
+    <p id='numberOfPoints'></p>
+
+    <p>Most Recent Data Point:</p>
+    <p id='latestData'></p>
+
+    <p>JSON Data:</p>
+    <p id='data'></p>
+
+  </body>
+</html>
